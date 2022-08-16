@@ -6,7 +6,6 @@ description = "Munin plugin that monitors pgp keys expiration date"
 readme = "README.md"
 repository = "https://github.com/golemfactory/munin-plugin-pgp-expiration"
 license = "GPL-3.0-or-later"
-license-file = "LICENSE.txt"
 
 [dependencies]
 anyhow = "1"
