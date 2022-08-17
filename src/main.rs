@@ -42,9 +42,9 @@ async fn get_days_to_expiration(
     Ok(get_cert(email, req_client)
         .await
         .context("Failed to get certificate")?
-        .with_policy(pgp_policy, Some(now.into()))
-        .context("Failed to validate certificate")?
         .keys()
+        .with_policy(pgp_policy, Some(now.into()))
+        .revoked(false)
         .filter_map(|key| {
             key.key_expiration_time()
                 .map(|t| (DateTime::<Utc>::from(t) - now).num_days())
