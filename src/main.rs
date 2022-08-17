@@ -58,8 +58,15 @@ struct KeyInfo {
     days_to_expiration: Result<Option<i64>, String>,
 }
 
+fn get_state_filename() -> Result<String> {
+    Ok(format!(
+        "{}/pgp_expiration",
+        env::var("MUNIN_PLUGSTATE").context("Failed to get env MUNIN_PLUGSTATE")?
+    ))
+}
+
 async fn cron() -> Result<Vec<KeyInfo>> {
-    // fetch data to MUNIN_STATEFILE
+    // fetch data to state file
 
     let req_client = reqwest::Client::new();
     let pgp_policy = &StandardPolicy::new();
@@ -84,24 +91,20 @@ async fn cron() -> Result<Vec<KeyInfo>> {
         .await;
 
     ron::ser::to_writer_pretty(
-        File::create(env::var("MUNIN_STATEFILE").context("Failed to get env MUNIN_STATEFILE")?)
-            .context("Failed to create file MUNIN_STATEFILE")?,
+        File::create(get_state_filename()?).context("Failed to create state file")?,
         &results,
         ron::ser::PrettyConfig::new(),
     )
-    .context("Failed to write MUNIN_STATEFILE")?;
+    .context("Failed to write state file")?;
 
     Ok(results)
 }
 
 async fn get_results() -> Result<Vec<KeyInfo>> {
-    Ok(
-        match File::open(env::var("MUNIN_STATEFILE").context("Failed to get env MUNIN_STATEFILE")?)
-        {
-            Ok(f) => ron::de::from_reader(f).context("Failed to read MUNIN_STATEFILE")?,
-            Err(_) => cron().await?,
-        },
-    )
+    Ok(match File::open(get_state_filename()?) {
+        Ok(f) => ron::de::from_reader(f).context("Failed to read state file")?,
+        Err(_) => cron().await?,
+    })
 }
 
 fn clean_fieldname(text: &str) -> String {
