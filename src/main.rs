@@ -49,7 +49,7 @@ async fn get_days_to_expiration(
             key.key_expiration_time()
                 .map(|t| (DateTime::<Utc>::from(t) - now).num_days())
         })
-        .min())
+        .max())
 }
 
 #[derive(Debug, Deserialize, Serialize)]
