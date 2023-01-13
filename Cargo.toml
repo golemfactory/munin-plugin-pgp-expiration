@@ -14,8 +14,8 @@ futures = "0.3"
 lazy_static = "1"
 regex = "1"
 reqwest = "0.11"
-ron = "0.7"
-sequoia-net = "0.25"
-sequoia-openpgp = "1.10"
+ron = "0.8"
+sequoia-net = "0.26"
+sequoia-openpgp = "1.13"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["macros", "rt"] }
